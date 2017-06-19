@@ -1,5 +1,5 @@
 """
-Using Scikit-learn and metrics
+Main script
 """
 import logging
 
@@ -11,7 +11,7 @@ from sklearn.svm import SVC
 import xgboost as xgb
 
 from utils import *
-from space import LRSpace, SVMSpace, XGBSpace
+from hyperspace import LRSpace, SVMSpace, XGBSpace
 
 ESTIMATORS = ['logistic', 'svm', 'xgboost']
 PREPROCESSORS = []
@@ -28,12 +28,12 @@ _logger.addHandler(handler)
 
 def run_pipeline(estimator_choice, dataset):
 
-    df = pd.read_csv("datasets/%s_train.data" % dataset,
+    df = pd.read_csv("../datasets/%s_train.data" % dataset,
                      sep=" ",
                      header=None,
                      index_col=False)
     df.dropna(axis=1, how='all', inplace=True)
-    target = pd.read_csv("datasets/%s_train.solution" % dataset,
+    target = pd.read_csv("../datasets/%s_train.solution" % dataset,
                          sep=" ",
                          header=None,
                          index_col=False)
@@ -45,12 +45,12 @@ def run_pipeline(estimator_choice, dataset):
     X = df.values
     y = target.values.ravel()
 
-    test_df = pd.read_csv("datasets/%s_test.data" % dataset,
+    test_df = pd.read_csv("../datasets/%s_test.data" % dataset,
                           sep=" ",
                           header=None,
                           index_col=False)
     test_df.dropna(axis=1, how='all', inplace=True)
-    test_target = pd.read_csv("datasets/%s_test.solution" % dataset,
+    test_target = pd.read_csv("../datasets/%s_test.solution" % dataset,
                               sep=" ",
                               header=None,
                               index_col=False)
@@ -75,7 +75,7 @@ def run_pipeline(estimator_choice, dataset):
 
     results_header = config_space.get_params()
 
-    results_file = "results/%s_%s." % (dataset, estimator_choice)
+    results_file = "../results/%s_%s." % (dataset, estimator_choice)
     pd.DataFrame(configs).to_csv(results_file + "data",
                                  sep=" ",
                                  header=results_header,
@@ -95,7 +95,7 @@ def run_pipeline(estimator_choice, dataset):
         _logger.info("\tDone fitting.")
 
         predictions = estimator.predict(test_X)
-        score = acc_metric(test_y, predictions)
+        score = f1_metric(test_y, predictions)
         results.write("%f" % score)
         _logger.info("\tScore: %f" % score)
 

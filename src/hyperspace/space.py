@@ -1,3 +1,13 @@
+"""
+Hyperparameter spaces for
+ 
+    Logistic Regression
+    Support Vector Machine
+    X-Gradient Boosting
+    
+Each hyperparameter to vary and its range/options are specified here.
+If not specified, default value in each algorithm's library implementations will be used.
+"""
 from collections import OrderedDict
 from itertools import product
 import math
@@ -35,11 +45,13 @@ class LRSpace(object):
         return self.params.keys()
 
     def _forbiddens(self, df):
+        """ Forbidden hyperparameter combinations """
         return (df[self.param2idx['penalty']] == 'l1') \
                & (df[self.param2idx['solver']].isin(['newton-cg', 'lbfgs', 'sag']))
 
     def grid(self, n):
         if n < 5:
+            # Default value for debugging
             self.params['C'].set_grid(1)
         else:
             self.params['C'].set_grid(n // 5)
@@ -68,6 +80,7 @@ class SVMSpace(object):
         return self.params.keys()
 
     def _forbiddens(self, df):
+        """ Forbidden hyperparameter combinations """
         return ((df[self.param2idx['kernel']] == 'linear')
                 & (df[self.param2idx['degree']].isin([2, 3, 4, 5])
                 & (df[self.param2idx['gamma']] > self.params['gamma'].min))) | \
@@ -76,6 +89,7 @@ class SVMSpace(object):
 
     def grid(self, n):
         if n < 7:
+            # Default values for debugging
             self.params['C'].set_grid(1)
             self.params['gamma'].set_grid(1)
             self.params['degree'].set_grid(1)
@@ -114,9 +128,9 @@ class XGBSpace(object):
     def get_params(self):
         return self.params.keys()
 
-
     def grid(self, n):
         if n < 1000:
+            # default? values for debugging
             self.params['max_depth'].set_grid(4)
             self.params['n_estimators'].set_grid(1)
             self.params['learning_rate'].set_grid(1)
