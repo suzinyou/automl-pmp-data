@@ -44,8 +44,6 @@ if __name__ == "__main__":
     df = df.iloc(shuffle_idx)
     target = target.iloc(shuffle_idx)
 
-
-
     split_idx = int(0.7 * n_samples)
     train_X = df[:split_idx]
     train_y = target[:split_idx]
