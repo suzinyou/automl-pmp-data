@@ -50,11 +50,7 @@ class LRSpace(object):
                & (df[self.param2idx['solver']].isin(['newton-cg', 'lbfgs', 'sag']))
 
     def grid(self, n):
-        if n < 5:
-            # Default value for debugging
-            self.params['C'].set_grid(1)
-        else:
-            self.params['C'].set_grid(n // 5)
+        self.params['C'].set_grid(n // 5)
 
         product_space = list(product(*[param.grid() for param in self.params.values()]))
         configs = pd.DataFrame(product_space)
@@ -88,16 +84,10 @@ class SVMSpace(object):
                 & (df[self.param2idx['degree']].isin([2, 3, 4, 5])))
 
     def grid(self, n):
-        if n < 7:
-            # Default values for debugging
-            self.params['C'].set_grid(1)
-            self.params['gamma'].set_grid(1)
-            self.params['degree'].set_grid(1)
-        else:
-            grid_n = int(math.sqrt(n / 7.))
-            self.params['C'].set_grid(grid_n)
-            self.params['gamma'].set_grid(grid_n)
-            self.params['degree'].set_grid(5)
+        grid_n = int(math.sqrt(n / 7.))
+        self.params['C'].set_grid(grid_n)
+        self.params['gamma'].set_grid(grid_n)
+        self.params['degree'].set_grid(5)
 
         product_space = list(product(*[param.grid() for param in self.params.values()]))
         configs = pd.DataFrame(product_space)
@@ -129,24 +119,15 @@ class XGBSpace(object):
         return self.params.keys()
 
     def grid(self, n):
-        if n < 1000:
-            # default? values for debugging
-            self.params['max_depth'].set_grid(4)
-            self.params['n_estimators'].set_grid(1)
-            self.params['learning_rate'].set_grid(1)
-            self.params['subsample'].set_grid(1)
-            self.params['min_child_weight'].set_grid(1)
-            self.params['colsample_bytree'].set_grid(1)
-            self.params['scale_pos_weight'].set_grid(1)
-        else:
-            grid_n = int((n/50)**(1./5.))
-            self.params['max_depth'].set_grid(5)
-            self.params['n_estimators'].set_grid(10)
-            self.params['learning_rate'].set_grid(grid_n)
-            self.params['subsample'].set_grid(grid_n)
-            self.params['min_child_weight'].set_grid(20)
-            self.params['colsample_bytree'].set_grid(grid_n)
-            self.params['scale_pos_weight'].set_grid(grid_n)
+
+        grid_n = int((n/50)**(1./5.))
+        self.params['max_depth'].set_grid(5)
+        self.params['n_estimators'].set_grid(10)
+        self.params['learning_rate'].set_grid(grid_n)
+        self.params['subsample'].set_grid(grid_n)
+        self.params['min_child_weight'].set_grid(20)
+        self.params['colsample_bytree'].set_grid(grid_n)
+        self.params['scale_pos_weight'].set_grid(grid_n)
 
         configs = list(product(*[param.grid() for param in self.params.values()]))
 
