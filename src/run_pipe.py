@@ -2,10 +2,9 @@
 Main script
 """
 import logging
+import argparse
 
 import pandas as pd
-import numpy as np
-
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 import xgboost as xgb
@@ -15,8 +14,14 @@ from hyperspace import LRSpace, SVMSpace, XGBSpace
 
 ESTIMATORS = ['logistic', 'svm', 'xgboost']
 PREPROCESSORS = []
-SEED = 1
-N = 1000
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("algorithm", help="Algorithm, choose from 'xgboost', 'svm', 'logistic'.", type=str)
+parser.add_argument("dataset", help="Dataset name.", type=str)
+parser.add_argument("n_configs", help="Number of hyperparameter configurations to create", type=int)
+
+args = parser.parse_args()
 
 _logger = logging.getLogger()
 _logger.setLevel(logging.INFO)
@@ -26,7 +31,8 @@ formatter = logging.Formatter('[%(levelname)s] [%(asctime)s, %(name)s] %(message
 handler.setFormatter(formatter)
 _logger.addHandler(handler)
 
-def run_pipeline(estimator_choice, dataset):
+
+def run_pipeline(estimator_choice, dataset, n_configs):
 
     df = pd.read_csv("../datasets/%s_train.data" % dataset,
                      sep=" ",
@@ -71,7 +77,7 @@ def run_pipeline(estimator_choice, dataset):
         raise ValueError("Estimator should be one of %s" % ESTIMATORS)
     _logger.info("Estimator: %s" % estimator_choice)
 
-    configs = config_space.grid(N)
+    configs = config_space.grid(n_configs)
 
     results_header = config_space.get_params()
 
@@ -103,4 +109,4 @@ def run_pipeline(estimator_choice, dataset):
     _logger.info("Results saved as %s*." % results_file)
 
 if __name__ == "__main__":
-    run_pipeline("xgboost", "christine")
+    run_pipeline(args.algorithm, args.dataset, args.n_configs)

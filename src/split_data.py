@@ -10,7 +10,7 @@ import os
 
 import pandas as pd
 import numpy as np
-import pickle
+from path import *
 
 
 parser = argparse.ArgumentParser()
@@ -19,17 +19,14 @@ parser.add_argument("name", help="Name of dataset", type=str)
 
 args = parser.parse_args()
 
-DATASETS_PATH = "/Users/suzinyou/Google Drive/XBrain/01_ML/01_Auto_ML/AutoML_Datasets/"
-
-
 if __name__ == "__main__":
 
     dataset = args.name
 
-    data_file = DATASETS_PATH + dataset + "/" + dataset + "_train.data"
-    solution_file = DATASETS_PATH + dataset + "/" + dataset + "_train.solution"
+    data_file = DATASETS_FROM + dataset + "/" + dataset + "_train.data"
+    solution_file = DATASETS_FROM + dataset + "/" + dataset + "_train.solution"
 
-    print("Reading files from %s..." % (DATASETS_PATH + dataset))
+    print("Reading files from %s..." % (DATASETS_FROM + dataset))
 
     df = pd.read_csv(data_file, sep=" ", header=None)
     target = pd.read_csv(solution_file, sep=" ", header=None)
@@ -50,13 +47,15 @@ if __name__ == "__main__":
     test_X = df[split_idx:]
     test_y = target[split_idx:]
 
-    if not os.path.exists("datasets"):
-        os.makedirs("datasets")
+    if not os.path.exists("%s" % DATASETS_TO):
+        os.makedirs("%s" % DATASETS_TO)
 
-    train_X.to_csv("datasets/%s_train.data" % dataset, sep=" ", header=False, index=False)
-    train_y.to_csv("datasets/%s_train.solution" % dataset, sep=" ", header=False, index=False)
-    test_X.to_csv("datasets/%s_test.data" % dataset, sep=" ", header=False, index=False)
-    test_y.to_csv("datasets/%s_test.solution" % dataset, sep=" ", header=False, index=False)
+    prefix = "%s/%s" % (DATASETS_TO, dataset)
 
-    print("Successfully saved files in datasets (%s_...)." % dataset)
+    train_X.to_csv("%s_train.data" % prefix, sep=" ", header=False, index=False)
+    train_y.to_csv("%s_train.solution" % prefix, sep=" ", header=False, index=False)
+    test_X.to_csv("%s_test.data" % prefix, sep=" ", header=False, index=False)
+    test_y.to_csv("%s_test.solution" % prefix, sep=" ", header=False, index=False)
+
+    print("Successfully saved files in %s (%s_...)." % (DATASETS_TO, dataset))
 
